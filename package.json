@@ -1,0 +1,38 @@
+{ "name": "devdock-recompose-pmb",
+  "version": "0.1.0",
+  "description": "Yet another docker-compose templating project",
+  "keywords": [
+    "docker",
+    "docker-compose",
+    "template"
+  ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/devdock-recompose-pmb-js/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/devdock-recompose-pmb-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/devdock-recompose-pmb-js/issues"
+  },
+  "contributors": [],
+
+  "private": false, "license": "ISC",
+
+  "main": "src/recompose.mjs",
+  "scripts": { "test": "bash test/all.sh" },
+  "directories": { "test": "test" },
+  "eslintConfig": { "extends": "nodejs-pmb" },
+
+  "engines": { "npm": ">=7.0.0", "node": ">=16.0.0" },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "peerDependencies": {
+  },
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
