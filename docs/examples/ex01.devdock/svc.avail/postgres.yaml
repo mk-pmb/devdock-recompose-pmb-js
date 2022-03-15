@@ -1,0 +1,33 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+FX:
+    varSlotMark: '¤'
+
+earlyCfg:
+    version: 14
+    port: 5432
+    user: 'postgres'
+    pswd: 'example'
+
+svc:
+    image: 'postgres:¤<cfg.^.version>-alpine'
+
+    volumes:
+      - '¤<proj.absdir>@/postgres.data/v¤<cfg.^.version>:/pgdata'
+
+    environment:
+        # https://hub.docker.com/_/postgres
+        PGDATA: '/pgdata'
+        POSTGRES_…:
+            # DB:  '¤<cfg.postgres.default_db_name>' # defaults to username
+            USER:       '¤<cfg.^.user>'
+            PASSWORD:   '¤<cfg.^.pswd>'
+
+    lhports:
+      - '¤<cfg.^.port>'
+
+
+...

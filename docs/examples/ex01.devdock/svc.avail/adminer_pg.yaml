@@ -1,0 +1,30 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+FX:
+    varSlotMark: '¤'
+
+svc:
+    image: 'adminer:latest'
+    environment:
+        # For available PHP settings, see https://github.com/wodby/php
+
+        ADMINER_…:
+            # For available Adminer settings, see https://github.com/wodby/adminer
+            DEFAULT_…:
+                DB_DRIVER: pgsql
+                SERVER: postgres
+                PORT: '¤<cfg.postgres.port>'
+                USER: '¤<cfg.postgres.user>'
+                PASSWORD: '¤<cfg.postgres.pswd|>'
+                DB: ''
+            DESIGN: pepa-linha-dark'
+            PLUGINS: ''
+
+    lhports:
+      - '5480:8080'
+
+
+...
