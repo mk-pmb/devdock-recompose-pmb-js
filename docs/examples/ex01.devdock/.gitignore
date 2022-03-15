@@ -1,0 +1,4 @@
+
+/[a-z]*/*.tmp.rc
+/[a-z]*/*.tmp.yaml
+/[a-z]*/tmp.*
