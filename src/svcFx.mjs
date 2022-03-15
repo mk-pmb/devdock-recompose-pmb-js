@@ -6,13 +6,15 @@ import kisi from './kitchenSink.lib.mjs';
 
 const {
   refineInplace,
+  flattenEllipsisKeysInplace,
 } = kisi;
 
 
-const EX = function netFx(spec, ctx) {
+const EX = function svcFx(spec, ctx) {
   refineInplace(spec, 'command', s => (s && String(s).trim()));
   refineInplace(spec, 'restart', EX.translateRestart);
   EX.maybeLocalhostPorts(spec, ctx);
+  flattenEllipsisKeysInplace(spec.environment);
 };
 
 

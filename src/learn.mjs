@@ -21,6 +21,13 @@ const EX = async function learn(dd, meta, spec) {
 function funAug(c, x) { return (ifFun(x) ? x(c.dd, c.meta) : x); }
 
 
+const cfgStageNamesOrder = [
+  'earlyCfg',
+  'cfg',
+  'lateCfg',
+];
+
+
 Object.assign(EX, {
 
   async fallible(dd, meta, origRootSpec) {
@@ -31,9 +38,19 @@ Object.assign(EX, {
     // console.debug('fallible', meta, rootSpec);
     ctx.rootSpec = rootSpec;
     ctx.rootPop = objPop(rootSpec, { mustBe }).mustBe;
+    ctx.fx = ctx.rootPop('obj | undef', 'FX') || {};
     EX.verifyFmt(ctx);
+
+    await pEachSeries(cfgStageNamesOrder, async function learnCfgSect(t) {
+      await EX.rootKey({ ...ctx, rootKeyTopic: t, mergeIntoTopic: 'cfg' });
+      // EX.applyVarSlotFx
+    });
+    // Stage 'cfg' will be run from topicOrder again, but at
+    // that point, the 'cfg' rootKey will have been objPop-ped already.
+    // Thus, the 2nd 'cfg' run will do nothing.
     await pEachSeries(scanDirs.topicOrder,
       t => EX.rootKey({ ...ctx, rootKeyTopic: t }));
+
     ctx.rootPop.expectEmpty('Unsupported top-level topic(s)');
   },
 
@@ -42,8 +59,7 @@ Object.assign(EX, {
     const fmt = ctx.rootPop('str', 'FMT', '');
     if (ctx.meta.ignFmt) { return; }
     const keys = new Set(Object.keys(ctx.rootSpec));
-    keys.delete('cfg');
-    keys.delete('cfgs');
+    cfgStageNamesOrder.forEach(st => [keys.delete(st), keys.delete(st + 's')]);
     if (keys.size === 0) { return; }
     mustBe([['eeq', ctx.dd.proj.composeFileFormat]],
       'FMT === composeFileFormat expected by project')(fmt);
@@ -70,6 +86,7 @@ Object.assign(EX, {
   async oneTopicKeySpec(origCtx, origName, origSpec) {
     if (!origSpec) { return; }
     let spec = { ...origSpec };
+    spec = EX.varSlotMarkFxNow(origCtx, spec);
     const specPop = objPop.d(spec, { mustBe }).mustBe;
 
     let name = (specPop('str | undef', 'NAME', origName) || '');
@@ -86,14 +103,14 @@ Object.assign(EX, {
     };
     // console.debug('oneTopicKeySpec', { ...ctx, dd: 0 }, spec);
 
-    const { rootKeyTopic } = ctx;
-    const fx = getOwn(EX.topicKeyFx, rootKeyTopic);
+    const mergeIntoTopic = (ctx.mergeIntoTopic || ctx.rootKeyTopic);
+    const fx = getOwn(EX.topicKeyFx, mergeIntoTopic);
     if (fx) {
       spec = ((await fx(spec, ctx)) || spec);
       if (spec === 'SKIP') { return; }
     }
 
-    const topicDict = getOrAddKey(ctx.dd, rootKeyTopic, '{}');
+    const topicDict = getOrAddKey(ctx.dd, mergeIntoTopic, '{}');
     topicDict[name] = mergeOpt(topicDict[name], spec);
   },
 
@@ -101,6 +118,11 @@ Object.assign(EX, {
   topicKeyFx: {
     net: netFx,
     svc: svcFx,
+  },
+
+
+  varSlotMarkFxNow(ctx, spec) {
+    return spec;
   },
 
 
