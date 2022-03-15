@@ -12,11 +12,18 @@ earlyCfg:
     user: 'postgres'
     pswd: 'example'
 
+    shm_size_mb: 32
+    # ^-- Adjust in case of "ERROR: could not resize shared memory segment".
+    #     See the "Caveats" section in https://hub.docker.com/_/postgres .
+
 svc:
     image: 'postgres:¤<cfg.^.version>-alpine'
 
     volumes:
       - '¤<proj.absdir>@/postgres.data/v¤<cfg.^.version>:/pgdata'
+
+    shm_size: '¤<cfg.^.shm_size_mb>MB'
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#shm_size
 
     environment:
         # https://hub.docker.com/_/postgres
