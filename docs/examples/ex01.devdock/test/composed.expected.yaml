@@ -10,4 +10,13 @@ networks:
         driver_opts:
             'com.docker.network.bridge.name': 'br-ex01'
 
+services:
+    debug_net_pyhttpd:
+        image: 'python:3-alpine'
+        restart: 'no'
+        command: "sh -c '\n    apk add strace && strace -fyxttv -s 256 \\\n    python3 -m http.server --directory . 8080\n    '"
+        working_dir: '/etc'
+        ports:
+          - '127.0.0.1:8087:8087'
+
 ...
