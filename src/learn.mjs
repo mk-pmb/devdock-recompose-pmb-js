@@ -65,15 +65,16 @@ Object.assign(EX, {
 
   async prepare(dd, meta, origRootSpec) {
     const ctx = { dd, meta, subCtx };
-    const rootSpec = await vTry.pr(funAug, 'Generate root spec from file '
-      + ctx.meta.file)(ctx, origRootSpec);
+    const rsff = 'root spec from file ' + ctx.meta.file;
+    const rootSpec = await vTry.pr(funAug, 'Generate ' + rsff,
+    )(ctx, origRootSpec);
     if (!rootSpec) { return; }
-    mustBe('obj', 'root config')(rootSpec);
+    mustBe('obj', rsff)(rootSpec);
     // console.debug('fallible', meta, rootSpec);
     ctx.rootSpec = rootSpec;
     ctx.rootPop = objPop(rootSpec, { mustBe }).mustBe;
-    ctx.fx = ctx.rootPop('obj | undef', 'FX') || {};
-    EX.verifyFmt(ctx);
+    ctx.fx = ctx.rootPop('obj | undef', 'FX option in ' + rsff) || {};
+    vTry(EX.verifyFmt, 'Verify format of ' + rsff)(ctx);
     return ctx;
   },
 
