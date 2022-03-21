@@ -16,7 +16,7 @@ const EX = async function maybeInstallFallbackNetwork(dd) {
     },
   };
 
-  await learn(dd, {
+  await learn.oneLateFile(dd, {
     file: 'devdock-internal://default-network',
   }, { FMT: '3', nets });
 };

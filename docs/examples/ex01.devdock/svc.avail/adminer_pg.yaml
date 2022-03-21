@@ -3,8 +3,6 @@
 ---
 
 FMT: '3'
-FX:
-    varSlotMark: '¤'
 
 svc:
     image: 'adminer:latest'
@@ -16,9 +14,9 @@ svc:
             DEFAULT_…:
                 DB_DRIVER: pgsql
                 SERVER: postgres
-                PORT: '¤<cfg.postgres.port>'
-                USER: '¤<cfg.postgres.user>'
-                PASSWORD: '¤<cfg.postgres.pswd|>'
+                PORT: 'Ð<cfg.postgres.port>'
+                USER: 'Ð<cfg.postgres.user>'
+                PASSWORD: 'Ð<cfg.postgres.pswd>'
                 DB: ''
             DESIGN: pepa-linha-dark'
             PLUGINS: ''

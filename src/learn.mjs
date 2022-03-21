@@ -6,17 +6,20 @@ import ifFun from 'if-fun';
 import mergeOpt from 'merge-options';
 import mustBe from 'typechecks-pmb/must-be.js';
 import objPop from 'objpop';
+import crObAss from 'create-object-and-assign';
+import pMapSeries from 'p-map-series';
 import pEachSeries from 'p-each-series';
 import vTry from 'vtry';
 
 import scanDirs from './scanDirs.mjs';
 import netFx from './netFx.mjs';
 import svcFx from './svcFx.mjs';
+import varSlotFx from './varSlotFx.mjs';
 
 
-const EX = async function learn(dd, meta, spec) {
-  return vTry.pr(EX.fallible, 'Learn file ' + meta.file)(dd, meta, spec);
-};
+
+const EX = {};
+
 
 function funAug(c, x) { return (ifFun(x) ? x(c.dd, c.meta) : x); }
 
@@ -28,11 +31,42 @@ const cfgStageNamesOrder = [
 ];
 
 
+const stageParams = [
+  ...cfgStageNamesOrder.map(t => ({ rootKeyTopic: t, mergeIntoTopic: 'cfg' })),
+  // Stage 'cfg' will be run from topicOrder again, but at
+  // that point, the 'cfg' rootKey will have been objPop-ped already.
+  // Thus, the 2nd 'cfg' run will do nothing.
+  ...scanDirs.topicOrder.map(t => ({ rootKeyTopic: t })),
+];
+
+
+function subCtx(a) { return crObAss(this, a); }
+
+
 Object.assign(EX, {
 
-  async fallible(dd, meta, origRootSpec) {
-    const ctx = { dd, meta };
-    const rootSpec = await funAug(ctx, origRootSpec);
+  async allFiles(dd, partFiles) {
+    function prep({ impl, ...meta }) { return EX.prepare(dd, meta, impl); }
+    const ctxs = await pMapSeries(partFiles, prep);
+    await pEachSeries(stageParams, function oneStage(param) {
+      function oneFile(ctx) { return EX.learnStage(ctx, param); }
+      return pEachSeries(ctxs, oneFile);
+    });
+    await pEachSeries(ctxs, EX.allStagesLearned);
+  },
+
+
+  async oneLateFile(dd, meta, spec) {
+    const ctx = await EX.prepare(dd, meta, spec);
+    await pEachSeries(stageParams, param => EX.learnStage(ctx, param));
+    await EX.allStagesLearned(ctx);
+  },
+
+
+  async prepare(dd, meta, origRootSpec) {
+    const ctx = { dd, meta, subCtx };
+    const rootSpec = await vTry.pr(funAug, 'Generate root spec from file '
+      + ctx.meta.file)(ctx, origRootSpec);
     if (!rootSpec) { return; }
     mustBe('obj', 'root config')(rootSpec);
     // console.debug('fallible', meta, rootSpec);
@@ -40,17 +74,24 @@ Object.assign(EX, {
     ctx.rootPop = objPop(rootSpec, { mustBe }).mustBe;
     ctx.fx = ctx.rootPop('obj | undef', 'FX') || {};
     EX.verifyFmt(ctx);
+    return ctx;
+  },
 
-    await pEachSeries(cfgStageNamesOrder, async function learnCfgSect(t) {
-      await EX.rootKey({ ...ctx, rootKeyTopic: t, mergeIntoTopic: 'cfg' });
-      // EX.applyVarSlotFx
-    });
-    // Stage 'cfg' will be run from topicOrder again, but at
-    // that point, the 'cfg' rootKey will have been objPop-ped already.
-    // Thus, the 2nd 'cfg' run will do nothing.
-    await pEachSeries(scanDirs.topicOrder,
-      t => EX.rootKey({ ...ctx, rootKeyTopic: t }));
 
+  learnStage(ctx, param) {
+    const descr = ('Learn section ' + ctx.rootKeyTopic
+      + ' of file ' + ctx.meta.file);
+    return vTry.pr(EX.rootKey, descr)(ctx.subCtx(param));
+  },
+
+
+  allStagesLearned(ctx) {
+    return vTry.pr(EX.allStagesLearnedFallible,
+      'After learning file ' + ctx.meta.file)(ctx);
+  },
+
+
+  allStagesLearnedFallible(ctx) {
     ctx.rootPop.expectEmpty('Unsupported top-level topic(s)');
   },
 
@@ -86,24 +127,22 @@ Object.assign(EX, {
   async oneTopicKeySpec(origCtx, origName, origSpec) {
     if (!origSpec) { return; }
     let spec = { ...origSpec };
-    spec = EX.varSlotMarkFxNow(origCtx, spec);
     const specPop = objPop.d(spec, { mustBe }).mustBe;
-
     let name = (specPop('str | undef', 'NAME', origName) || '');
     if ((!name) || name.startsWith('_')) {
       const { meta } = origCtx;
       scanDirs.ensureFilenamePartsInplace(meta);
       name = meta.idName + name;
     }
+    const { rootKeyTopic } = origCtx;
+    const ctx = origCtx.subCtx({ spec, specPop, name });
 
-    const ctx = {
-      ...origCtx,
-      name,
-      specPop,
-    };
-    // console.debug('oneTopicKeySpec', { ...ctx, dd: 0 }, spec);
+    // We can only render varSlotFx once we know our name,
+    // because varSlotFx supports shorthands for using the name.
+    // console.debug('before varSlotFx', { id: ctx.meta.idName, rootKeyTopic });
+    await varSlotFx.renderInplace(ctx, spec);
 
-    const mergeIntoTopic = (ctx.mergeIntoTopic || ctx.rootKeyTopic);
+    const mergeIntoTopic = (ctx.mergeIntoTopic || rootKeyTopic);
     const fx = getOwn(EX.topicKeyFx, mergeIntoTopic);
     if (fx) {
       spec = ((await fx(spec, ctx)) || spec);
@@ -118,11 +157,6 @@ Object.assign(EX, {
   topicKeyFx: {
     net: netFx,
     svc: svcFx,
-  },
-
-
-  varSlotMarkFxNow(ctx, spec) {
-    return spec;
   },
 
 

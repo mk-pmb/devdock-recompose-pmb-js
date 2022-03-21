@@ -3,8 +3,6 @@
 ---
 
 FMT: '3'
-FX:
-    varSlotMark: '¤'
 
 earlyCfg:
     version: 14
@@ -17,24 +15,24 @@ earlyCfg:
     #     See the "Caveats" section in https://hub.docker.com/_/postgres .
 
 svc:
-    image: 'postgres:¤<cfg.^.version>-alpine'
+    image: 'postgres:Ð<cfg.^.version>-alpine'
 
     volumes:
-      - '¤<proj.absdir>@/postgres.data/v¤<cfg.^.version>:/pgdata'
+      - 'Ð<proj.absdir>@/postgres.data/vÐ<cfg.^.version>:/pgdata'
 
-    shm_size: '¤<cfg.^.shm_size_mb>MB'
+    shm_size: 'Ð<cfg.^.shm_size_mb>MB'
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#shm_size
 
     environment:
         # https://hub.docker.com/_/postgres
         PGDATA: '/pgdata'
         POSTGRES_…:
-            # DB:  '¤<cfg.postgres.default_db_name>' # defaults to username
-            USER:       '¤<cfg.^.user>'
-            PASSWORD:   '¤<cfg.^.pswd>'
+            # DB:  'Ð<cfg.^.default_db_name>' # defaults to username
+            USER:       'Ð<cfg.^.user>'
+            PASSWORD:   'Ð<cfg.^.pswd>'
 
     lhports:
-      - '¤<cfg.^.port>'
+      - 'Ð<cfg.^.port>'
 
 
 ...
