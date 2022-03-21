@@ -5,7 +5,7 @@
 FMT: '3'
 
 svc:
-    image: 'adminer:latest'
+    image: 'adminer:4.8'
     environment:
         # For available PHP settings, see https://github.com/wodby/php
 

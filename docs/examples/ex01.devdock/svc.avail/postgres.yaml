@@ -18,7 +18,7 @@ svc:
     image: 'postgres:Ð<cfg.^.version>-alpine'
 
     volumes:
-      - 'Ð<proj.absdir>@/postgres.data/vÐ<cfg.^.version>:/pgdata'
+      - 'Ð<proj.absdir>/@/postgres.data/vÐ<cfg.^.version>:/pgdata'
 
     shm_size: 'Ð<cfg.^.shm_size_mb>MB'
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#shm_size
