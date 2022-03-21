@@ -18,7 +18,7 @@ svc:
                 USER: 'Ð<cfg.postgres.user>'
                 PASSWORD: 'Ð<cfg.postgres.pswd>'
                 DB: ''
-            DESIGN: pepa-linha-dark'
+            # DESIGN: 'pepa-linha-dark'
             PLUGINS: ''
 
     lhports:
