@@ -1,0 +1,39 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+# Use python as a very simple webserver for debugging firewall issues
+# that might interfere with docker services.
+#
+# A full python install may be overkill for just serving a simple
+# dummy website. However, this image is meant for debugging
+# connectivity issues outside the container, so in order to trust
+# that the issue is outside, on the inside we need software that
+# most devs can easily trust and rely on.
+#
+# We use strace to see whether python is really ready and listening,
+# or stuck for reasons like a stalling disk read. This way, when no
+# log messages are printed, we can be sure that the log silence is
+# due to network silence inside the container.
+
+FMT: '3'
+
+svc:
+    image: 'python:3-alpine'
+    restart: never
+    command: >
+        sh -c '
+            apk add strace && strace -fyxttv -s 256 \
+            python3 -m http.server --directory . 8080
+            '
+    working_dir: '/etc'
+        # ^-- A path that will probably contain some small text files
+        #     even in distant future versions.
+        # curl --verbose http://localhost:8087/motd
+
+    lhports:
+      - 8087
+
+
+
+...
