@@ -1,0 +1,13 @@
+%YAML 1.1
+# ^-- Some parsers don't accept v1.2 yet, e.g. GitLab CI.
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+version: '3'
+networks:
+    default:
+        type: 'bridge'
+        driver_opts:
+            'com.docker.network.bridge.name': 'br-ex01'
+
+...
