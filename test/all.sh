@@ -35,8 +35,7 @@ function test_one_exdir () {
   env \
     DEVDOCK_DIR="$EXAMPLE_DIR" \
     COMPOSE_PROJECT_NAME="$PROJ_NAME" \
-    node -r 'devdock-recompose-pmb/src/cli.node.js' -e 0 \
-    >"$RESULTS_BFN".yaml || return $?
+    node -r './src/cli.node.js' -e 0 >"$RESULTS_BFN".yaml || return $?
   sed -re "s~$REPOPATH_RGX/~/…/~g" -i "$RESULTS_BFN".yaml || return $?
 
   diff -U 2 -- "$EXPECTATION_FILE" "$RESULTS_BFN".yaml >"$RESULTS_BFN".diff
