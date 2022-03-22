@@ -47,6 +47,15 @@ services:
           - '127.0.0.1:2370:2370'
           - '127.0.0.1:2380:2380'
 
+    mongodb:
+        image: 'mongo:5'
+        volumes:
+          - '/…/docs/examples/ex01.devdock/@/mongo.data/v5:/data'
+
+        restart: 'always'
+        ports:
+          - '127.0.0.1:27017:27017'
+
     postgres:
         image: 'postgres:14-alpine'
         volumes:

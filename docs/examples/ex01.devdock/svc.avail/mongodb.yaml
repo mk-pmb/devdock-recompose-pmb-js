@@ -1,0 +1,19 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+
+earlyCfg:
+    version: 5
+    port: 27017
+
+svc:
+    image: 'mongo:Ð<cfg.^.version>'
+    volumes:
+      - 'Ð<proj.absdir>/@/mongo.data/vÐ<cfg.^.version>:/data'
+    lhports:
+      - 'Ð<cfg.^.port>'
+
+
+...
