@@ -71,4 +71,25 @@ services:
         ports:
           - '127.0.0.1:5432:5432'
 
+    redis_db:
+        image: 'redis:alpine'
+        volumes:
+          - '/…/docs/examples/ex01.devdock/@/redis.data/v6:/data'
+
+        command: 'redis-server,--save,--appendonly,yes'
+        hostname: 'redis-db'
+        restart: 'always'
+        ports:
+          - '127.0.0.1:6379:6379'
+
+    redis_cmdr:
+        image: 'rediscommander/redis-commander:latest'
+        environment:
+            REDIS_HOSTS: 'DevDock:redis-db:6379'
+
+        hostname: 'redis-cmdr'
+        restart: 'always'
+        ports:
+          - '127.0.0.1:6380:8081'
+
 ...

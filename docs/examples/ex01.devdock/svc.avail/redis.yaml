@@ -1,0 +1,34 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+
+earlyCfgs:
+
+    _db:
+        version: 6
+        port: 6379
+
+svcs:
+
+  _db:
+    image: redis:alpine
+    lhports:
+      - 'Ð<cfg.^.port>'
+    volumes:
+      - 'Ð<proj.absdir>/@/redis.data/vÐ<cfg.^.version>:/data'
+    command: ['redis-server', '--save', '--appendonly', 'yes']
+
+  _cmdr:
+    image: rediscommander/redis-commander:latest
+    environment:
+        REDIS_…:
+            HOSTS: 'DevDock:redis-db:Ð<cfg.redis_db.port>'
+    lhports:
+      - '6380:8081'
+        # => http://localhost:6380/
+
+
+
+...
