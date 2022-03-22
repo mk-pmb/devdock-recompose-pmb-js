@@ -71,6 +71,17 @@ services:
         ports:
           - '127.0.0.1:5432:5432'
 
+    pyhttpd:
+        image: 'python:3-alpine'
+        volumes:
+          - '/…/docs/examples/ex01.devdock/@/wwwpub:/var/www/pub'
+
+        command: 'python3 -m http.server --directory . 8083'
+        working_dir: '/var/www/pub'
+        restart: 'always'
+        ports:
+          - '127.0.0.1:8083:8083'
+
     rabbitmq:
         image: 'rabbitmq:3-management'
         volumes:

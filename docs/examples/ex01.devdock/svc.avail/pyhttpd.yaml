@@ -1,0 +1,20 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+
+cfg:
+    port: 8083
+
+svc:
+    image: 'python:3-alpine'
+    volumes:
+      - 'Ð<proj.absdir>/@/wwwpub:/var/www/pub'
+    command: 'python3 -m http.server --directory . Ð<cfg.^.port>'
+    working_dir: '/var/www/pub'
+    lhports:
+      - 'Ð<cfg.^.port>'
+
+
+...
