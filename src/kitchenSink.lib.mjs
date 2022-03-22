@@ -32,8 +32,8 @@ function flattenEllipsisKeysInplace(x) {
 
 const kisi = {
 
-  refineInplace(o, k, f) {
-    const n = f(o[k]);
+  refineInplace(o, k, f, a) {
+    const n = f(o[k], (a || o));
     if (n === undefined) { return; }
     o[k] = n; // eslint-disable-line no-param-reassign
     return n;

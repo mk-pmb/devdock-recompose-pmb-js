@@ -1,6 +1,7 @@
 // -*- coding: utf-8, tab-width: 2 -*-
 
 import getOrAddKey from 'getoraddkey-simple';
+import kebabCase from 'just-kebab-case'; // lodash.kebabcase('a1') = 'a-1'
 
 import kisi from './kitchenSink.lib.mjs';
 
@@ -10,8 +11,12 @@ const {
 } = kisi;
 
 
+function trimIf(s) { return (s && String(s).trim()); }
+
+
 const EX = function svcFx(spec, ctx) {
-  refineInplace(spec, 'command', s => (s && String(s).trim()));
+  refineInplace(spec, 'command', trimIf);
+  refineInplace(spec, 'hostname', EX.hostnameKebab, ctx);
   refineInplace(spec, 'restart', EX.translateRestart);
   EX.maybeLocalhostPorts(spec, ctx);
   flattenEllipsisKeysInplace(spec.environment);
@@ -25,6 +30,15 @@ Object.assign(EX, {
     if (o === false) { return 'no'; }
     if (o === 'never') { return 'no'; }
     return (o || 'always');
+  },
+
+  hostnameKebab(custom, ctx) {
+    if (custom !== undefined) { return; }
+    const svcName = ctx.name;
+    if (!svcName) { return; }
+    const k = kebabCase(svcName);
+    if (k === svcName) { return; }
+    return k;
   },
 
   maybeLocalhostPorts(spec, ctx) {

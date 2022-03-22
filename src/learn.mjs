@@ -129,12 +129,8 @@ Object.assign(EX, {
     if (!origSpec) { return; }
     let spec = { ...origSpec };
     const specPop = objPop.d(spec, { mustBe }).mustBe;
-    let name = (specPop('str | undef', 'NAME', origName) || '');
-    if ((!name) || name.startsWith('_')) {
-      const { meta } = origCtx;
-      scanDirs.ensureFilenamePartsInplace(meta);
-      name = meta.idName + name;
-    }
+    const rawName = (specPop('str | undef', 'NAME', origName) || '');
+    const name = EX.maybeAddNamePrefix(rawName, origCtx.meta);
     const { rootKeyTopic } = origCtx;
     const ctx = origCtx.subCtx({ spec, specPop, name });
 
@@ -144,14 +140,27 @@ Object.assign(EX, {
     await varSlotFx.renderInplace(ctx, spec);
 
     const mergeIntoTopic = (ctx.mergeIntoTopic || rootKeyTopic);
-    const fx = getOwn(EX.topicKeyFx, mergeIntoTopic);
-    if (fx) {
-      spec = ((await fx(spec, ctx)) || spec);
+    const topicFx = getOwn(EX.topicKeyFx, mergeIntoTopic);
+    if (topicFx) {
+      spec = ((await topicFx(spec, ctx)) || spec);
       if (spec === 'SKIP') { return; }
     }
 
     const topicDict = getOrAddKey(ctx.dd, mergeIntoTopic, '{}');
     topicDict[name] = mergeOpt(topicDict[name], spec);
+  },
+
+
+  maybeAddNamePrefix(name, meta) {
+    const s = String(name || '');
+    const f = (s && s.slice(0, 1));
+    const a = ((!f)
+      || (f === '_')
+      || (f === '-')
+    );
+    if (!a) { return s; }
+    scanDirs.ensureFilenamePartsInplace(meta);
+    return meta.idName + s;
   },
 
 

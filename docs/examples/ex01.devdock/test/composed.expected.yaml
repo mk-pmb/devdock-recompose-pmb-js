@@ -22,6 +22,7 @@ services:
             ADMINER_DEFAULT_DB: ''
             ADMINER_PLUGINS: ''
 
+        hostname: 'adminer-pg'
         restart: 'always'
         ports:
           - '127.0.0.1:5480:8080'
@@ -31,6 +32,7 @@ services:
         restart: 'no'
         command: "sh -c '\n    apk add strace && strace -fyxttv -s 256 \\\n    python3 -m http.server --directory . 8080\n    '"
         working_dir: '/etc'
+        hostname: 'debug-net-pyhttpd'
         ports:
           - '127.0.0.1:8087:8087'
 
@@ -38,6 +40,7 @@ services:
         image: 'node:16'
         command: "sh -c 'date -R && sleep 9009009d'"
         working_dir: '/'
+        hostname: 'debug-nodejs'
         restart: 'always'
         ports:
           - '127.0.0.1:2322:2322'
