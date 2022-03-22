@@ -34,6 +34,16 @@ services:
         ports:
           - '127.0.0.1:8087:8087'
 
+    debug_nodejs:
+        image: 'node:16'
+        command: "sh -c 'date -R && sleep 9009009d'"
+        working_dir: '/'
+        restart: 'always'
+        ports:
+          - '127.0.0.1:2322:2322'
+          - '127.0.0.1:2370:2370'
+          - '127.0.0.1:2380:2380'
+
     postgres:
         image: 'postgres:14-alpine'
         volumes:

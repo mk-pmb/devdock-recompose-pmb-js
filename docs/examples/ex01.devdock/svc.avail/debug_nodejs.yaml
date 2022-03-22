@@ -1,0 +1,29 @@
+%YAML 1.2
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+
+svc:
+    image: 'node:16'
+
+    command: >
+        sh -c 'date -R && sleep 9009009d'
+
+    # ^-- To start an actual debug shell, run:
+    #     docker exec --interactive --tty ex01_debug_shell_1 bash -i
+    # NB: No "exec" in command: "sleep" seems to ignore SIGTERM when it
+    #     runs as pid 1, which would slow down stopping of the container.
+    # NB: If you have docker-compose installed locally, you can use its
+    #     exec instead of docker, to avoid having to guess the container
+    #     name suffix. In case of dockerized docker-compose though, it's
+    #     probably not worth creating the temporary container.
+
+    working_dir: '/'
+
+    lhports:
+        - 2322
+        - 2370
+        - 2380
+
+...
