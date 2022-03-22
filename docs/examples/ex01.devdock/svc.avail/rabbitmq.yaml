@@ -1,0 +1,50 @@
+%YAML 1.1
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+FMT: '3'
+
+earlyCfg:
+    version: 3
+    # erlang_cookie: # Set this in your own local config.
+
+svc:
+    image: 'rabbitmq:Ð<cfg.^.version>-management'
+    # https://hub.docker.com/_/rabbitmq/
+
+    volumes:
+      - 'Ð<proj.absdir>/@/rabbitmq.data/vÐ<cfg.^.version>:/var/lib/rabbitmq'
+      - 'Ð<proj.absdir>/@/ssldebug-dummycert-pmb/ssldebug.pem:/ssldebug.pem:ro'
+
+    environment:
+        RABBITMQ_…:
+            ERLANG_COOKIE: 'Ð<cfg.^.erlang_cookie>'
+
+            SSL_…:
+                # ATTN: Setting SSL vars will disable the unencrypted version
+                #       of the management interface!
+                # CACERTFILE: '/ssldebug.pem'
+                # CERTFILE: '/ssldebug.pem'
+                # KEYFILE: '/ssldebug.pem'
+                # FAIL_IF_NO_PEER_CERT: 'false'
+                # VERIFY: 'verify_peer'
+
+            DEFAULT_…:
+                # doesn't work anyway:
+                # USER: 'bernd'
+                # PASS: 'CarrotBread'
+
+    lhports:
+      # amqps://localhost:5671/
+      - 5671
+      # amqp://localhost:5672/
+      - 5672
+      # management plugin @ https://localhost:15671/
+      - 15671
+      # management plugin @ http://localhost:15672/
+      - 15672
+
+
+
+
+...

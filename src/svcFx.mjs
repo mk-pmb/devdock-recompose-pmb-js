@@ -19,7 +19,7 @@ const EX = function svcFx(spec, ctx) {
   refineInplace(spec, 'hostname', EX.hostnameKebab, ctx);
   refineInplace(spec, 'restart', EX.translateRestart);
   EX.maybeLocalhostPorts(spec, ctx);
-  flattenEllipsisKeysInplace(spec.environment);
+  EX.envFx(spec.environment);
 };
 
 
@@ -51,6 +51,13 @@ Object.assign(EX, {
       if (!p.includes(':')) { p += ':' + p; }
       ports.push('127.0.0.1:' + p);
     });
+  },
+
+  envFx(env) {
+    if (!env) { return; }
+    flattenEllipsisKeysInplace(env);
+    // eslint-disable-next-line no-param-reassign
+    Object.keys(env).forEach(k => ((env[k] === null) && (delete env[k])));
   },
 
 

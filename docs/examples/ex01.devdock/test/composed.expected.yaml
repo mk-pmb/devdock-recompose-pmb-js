@@ -71,6 +71,22 @@ services:
         ports:
           - '127.0.0.1:5432:5432'
 
+    rabbitmq:
+        image: 'rabbitmq:3-management'
+        volumes:
+          - '/…/docs/examples/ex01.devdock/@/rabbitmq.data/v3:/var/lib/rabbitmq'
+          - '/…/docs/examples/ex01.devdock/@/ssldebug-dummycert-pmb/ssldebug.pem:/ssldebug.pem:ro'
+
+        environment:
+            RABBITMQ_ERLANG_COOKIE: 'BiscuitBiscuitCrumbCrumb'
+
+        restart: 'always'
+        ports:
+          - '127.0.0.1:5671:5671'
+          - '127.0.0.1:5672:5672'
+          - '127.0.0.1:15671:15671'
+          - '127.0.0.1:15672:15672'
+
     redis_db:
         image: 'redis:alpine'
         volumes:
