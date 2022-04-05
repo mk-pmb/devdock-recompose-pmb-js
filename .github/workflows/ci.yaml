@@ -14,15 +14,17 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version:
-                    -   '16.x'
+                ver:
+                    -   { node: 8,  eslint: 6 }
+                    -   { node: 16, eslint: '' }
 
         steps:
             -   uses: actions/checkout@v2
-            -   name: Use Node.js ${{ matrix.node-version }}
+            -   name: Use Node.js ${{ matrix.ver.node }}.x
                 uses: actions/setup-node@v1
                 with:
-                    node-version: ${{ matrix.node-version }}
+                    node-version: ${{ matrix.ver.node }}.x
+            -   run: '[ -z "${{ matrix.ver.eslint }}" ] || npm install --global eslint@${{ matrix.ver.eslint }}'
             -   run: npm install .
             -   run: npm audit
             -   run: npm test
