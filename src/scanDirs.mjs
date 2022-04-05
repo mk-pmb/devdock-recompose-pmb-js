@@ -1,6 +1,7 @@
 // -*- coding: utf-8, tab-width: 2 -*-
 
 import fsPr from 'fs/promises';
+import pAllay from 'p-allay';
 import pathLib from 'path';
 import pMapSeries from 'p-map-series';
 import readDataFile from 'read-data-file';
@@ -35,11 +36,12 @@ Object.assign(EX, {
 
   async scanFilesInOneDir(meta) {
     const { enabDir } = meta;
-    const allFileNames = await fsPr.readdir(enabDir);
+    const allFileNames = await pAllay.eNoEnt(fsPr.readdir(enabDir));
     // ^- Unfortunately, we cannot use { withFileTypes: true }  in
     //    node v16.14.0 because the .isFile method of its dirEnts
     //    will return false for symlinks that point to a regular file.
     //    Work-around: (await fsPr.stat(path)).isFile() works.
+    if (!allFileNames) { return []; }
     const notHidden = allFileNames.filter(n => !n.startsWith('.'));
     notHidden.sort();
     const imported = await pMapSeries(notHidden,

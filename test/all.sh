@@ -8,7 +8,7 @@ function all_tests () {
   cd -- "$REPOPATH" || return $?
   local REPOPATH_RGX="$(sed -re 's~[^A-Za-z0-9_/.-]~\\&~g' <<<"$REPOPATH")"
 
-  echo -n 'Lint: '
+  echo 'D: Lint: …'
   elp || return $?
 
   local ITEM=
